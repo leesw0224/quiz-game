@@ -20,6 +20,24 @@ class Quiz:
         return user_answer == self.answer
 
 
+def get_default_quizzes():
+    """파이썬 기초 주제의 기본 퀴즈 목록을 Quiz 인스턴스로 만들어 반환한다."""
+    return [
+        Quiz("Python에서 정수(integer)를 나타내는 자료형은?",
+             ["int", "str", "bool", "list"], 1),
+        Quiz("print(type(\"3\"))를 실행하면 어떤 자료형이 출력될까?",
+             ["int", "float", "str", "bool"], 3),
+        Quiz("a = [10, 20, 30] 일 때 a[1]의 값은?",
+             ["10", "20", "30", "오류 발생"], 2),
+        Quiz("if 조건이 거짓일 때 다른 조건을 이어서 검사하는 키워드는?",
+             ["else", "then", "elif", "case"], 3),
+        Quiz("for i in range(3): 에서 i가 차례로 가지는 값은?",
+             ["1, 2, 3", "0, 1, 2", "0, 1, 2, 3", "1, 2"], 2),
+        Quiz("{\"name\": \"Kim\"}처럼 키와 값을 짝지어 저장하는 자료형은?",
+             ["list", "tuple", "set", "dict"], 4),
+    ]
+
+
 def print_menu():
     """메뉴 화면을 출력한다."""
     print("=" * 40)

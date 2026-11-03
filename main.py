@@ -73,13 +73,45 @@ def input_number(prompt, min_value, max_value):
         return number
 
 
+def play_quiz(quizzes):
+    """저장된 퀴즈를 순서대로 출제하고, 맞힌 개수를 반환한다."""
+    if not quizzes:  # 퀴즈가 없는 경우
+        print("📭 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해 주세요.")
+        return None
+
+    total = len(quizzes)
+    correct = 0
+    print(f"📝 퀴즈를 시작합니다! (총 {total}문제)")
+    print()
+
+    for number, quiz in enumerate(quizzes, start=1):
+        print("-" * 40)
+        quiz.display(number)
+        user_answer = input_number("정답 입력: ", 1, len(quiz.choices))
+
+        if quiz.is_correct(user_answer):
+            print("✅ 정답입니다!")
+            correct += 1
+        else:
+            print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
+        print()
+
+    score = round(correct / total * 100)  # 100점 만점 환산
+    print("=" * 40)
+    print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
+    print("=" * 40)
+    return correct
+
+
 def main():
+    quizzes = get_default_quizzes()
+
     while True:
         print_menu()
         choice = input_number("선택: ", 1, 5)
 
         if choice == 1:
-            print("퀴즈 풀기 기능은 준비 중입니다.")
+            play_quiz(quizzes)
         elif choice == 2:
             print("퀴즈 추가 기능은 준비 중입니다.")
         elif choice == 3:

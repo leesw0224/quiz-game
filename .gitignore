@@ -1,16 +1,15 @@
-   # Python
-   __pycache__/
-   *.pyc
+# Python
+__pycache__/
+*.pyc
 
-   # 가상환경
-   .venv/
-   venv/
+# 가상환경
+.venv/
+venv/
 
-   # OS / 에디터
-   .DS_Store
-   Thumbs.db
-   .vscode/
+# OS / 에디터
+.DS_Store
+Thumbs.db
+.vscode/
 
-   # 실행 중 생성되는 데이터 파일
-   state.json
-   
+# 실행 중 생성되는 데이터 파일
+state.json

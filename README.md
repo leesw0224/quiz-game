@@ -56,7 +56,14 @@ quiz-game/
 ├── main.py       # 프로그램 전체 (Quiz, QuizGame 클래스와 입력 처리 함수)
 ├── README.md     # 프로젝트 설명
 ├── .gitignore    # Git에서 제외할 파일 목록
-└── state.json    # 실행 시 자동 생성되는 데이터 파일 (Git에서 제외)
+├── state.json    # 실행 시 자동 생성되는 데이터 파일 (Git에서 제외)
+└── docs/
+    ├── RUN_LOG.md                      # 실행 결과 기록 (메뉴·풀기·추가·목록·점수·예외·재실행)
+    ├── GIT_EVIDENCE.md                 # Git 기록 설명 (커밋 그래프, 브랜치 병합, clone/pull)
+    ├── git_log_graph.txt               # git log --oneline --graph --all 출력
+    ├── git_commit_count.txt            # git rev-list --count main 출력
+    ├── git_reflog_quiz-game.txt        # 원래 작업 폴더의 git reflog (clone, pull)
+    └── git_reflog_quiz-game-clone.txt  # 복제 폴더의 git reflog (clone, commit)
 ```
 
 **main.py 구성**
@@ -110,6 +117,74 @@ quiz-game/
 **Git에서 제외한 이유**
 
 `state.json`은 실행할 때마다 내용이 바뀌는 사용자 데이터라 `.gitignore`에 넣어 저장소에서 제외했습니다.
-기본 퀴즈는 코드(`get_default_quizzes()`)에 들어 있어서, 파일이 없어도 프로그램이 정상 동작합니다.- Git clone 및 pull 실습을 통해 원격 저장소와 로컬 저장소의 동기화를 확인했습니다.
-- 두 번째 작업 폴더에서 git pull 동기화 실습을 진행합니다.
-- clone/pull 실습: quiz-game-clone 폴더에서 이 줄을 추가해 push했습니다.
+기본 퀴즈는 코드(`get_default_quizzes()`)에 들어 있어서, 파일이 없어도 프로그램이 정상 동작합니다.
+
+## 실행 결과와 Git 기록
+
+- 실행 결과: [`docs/RUN_LOG.md`](docs/RUN_LOG.md) — 메뉴, 퀴즈 풀기·추가·목록·점수 확인, 잘못된 입력 처리, `Ctrl+C` 종료, 재실행 후 데이터 유지(재실행 전후 `state.json` 내용 포함)
+- Git 기록: [`docs/GIT_EVIDENCE.md`](docs/GIT_EVIDENCE.md) — `git log --oneline --graph` 결과, `feature/play-quiz` 브랜치 생성·병합, clone/pull 실습 출력 (원본 출력은 `docs/*.txt`)
+
+## 커밋 규칙
+
+**커밋 단위:** 기능 하나가 완성되어 실행으로 확인되면 커밋합니다. 서로 다른 기능은 한 커밋에 섞지 않습니다.
+(예: 메뉴 → Quiz 클래스 → 기본 퀴즈 → 퀴즈 풀기 → 추가 → 목록 → 점수 → 리팩터링 → 저장/불러오기 → README)
+
+**메시지 템플릿:**
+
+```
+<타입>: <무엇을 했는지 한 줄 요약> (필요하면 괄호로 세부 내용)
+```
+
+| 타입 | 언제 쓰는가 | 이 저장소의 실제 예 |
+|---|---|---|
+| `Feat` | 새 기능 추가 | `Feat: 퀴즈 추가 기능 구현 (문제·선택지·정답 입력 및 검증)` |
+| `Fix` | 버그 수정 | `Fix: .gitignore 줄 앞 공백 제거로 무시 규칙 적용` |
+| `Refactor` | 동작은 같고 구조만 개선 | `Refactor: QuizGame 클래스로 게임 기능 정리` |
+| `Docs` | 문서 수정 | `Docs: README 작성 (개요, 실행 방법, 기능, 파일 구조, state.json 설명)` |
+| `Merge` | 브랜치 병합 | `Merge: 퀴즈 풀기 기능 병합 (feature/play-quiz)` |
+
+**브랜치 규칙:** 새 기능은 `feature/<기능이름>` 브랜치에서 작업하고, 완성 후 `main`으로 `git merge --no-ff` 하여 병합 기록을 남깁니다.
+
+## 대용량 데이터(퀴즈 1000개 이상) 처리 분석
+
+**현재 구조**
+
+- `load_state()`는 실행할 때 `state.json` 전체를 한 번에 읽어 `Quiz` 객체 리스트(`self.quizzes`)로 메모리에 올립니다.
+- `save_state()`는 퀴즈 추가·최고 점수 갱신·종료 때마다 파일 전체를 다시 씁니다.
+- `play()`는 등록된 퀴즈를 모두 순서대로 출제하고, `show_quiz_list()`는 전체 목록을 한 번에 출력합니다.
+- 특정 퀴즈를 찾는 검색 기능은 없습니다. 찾으려면 리스트를 처음부터 끝까지 확인해야 합니다(O(n)).
+
+**측정 결과** (이 저장소의 `main.py`를 그대로 사용, 문제 길이가 짧은 가상 퀴즈로 측정. 컴퓨터마다 수치는 다를 수 있음)
+
+| 퀴즈 수 | state.json 크기 | 불러오기 | 저장 1회 |
+|---|---|---|---|
+| 1,000개 | 약 180KB | 약 2ms | 약 4ms |
+| 10,000개 | 약 1.8MB | 약 19ms | 약 42ms |
+| 100,000개 | 약 18MB | 약 0.3초 | 약 0.4초 |
+
+**예상 병목**
+
+1. **저장:** 퀴즈 1개만 추가해도 파일 전체를 다시 쓰므로, 퀴즈가 많을수록 저장 시간이 퀴즈 수에 비례해 늘어납니다.
+2. **사용성:** 1000개 이상이면 퀴즈 풀기가 1000문제를 연속 출제하고, 목록도 한 화면에 다 출력되어 사실상 쓰기 어렵습니다. 1000개 수준에서는 속도보다 이 문제가 먼저 나타납니다.
+3. **메모리:** 모든 퀴즈를 메모리에 올리므로, 데이터가 매우 커지면 메모리 사용량도 함께 커집니다.
+4. **안정성:** 저장 도중 프로그램이 강제 종료되면 파일이 덜 써진 상태로 남을 수 있습니다(현재는 손상 시 기본 퀴즈로 복구되어 추가한 퀴즈가 사라짐).
+
+**개선 방안**
+
+- 퀴즈 풀기: 문제 수를 선택하고 `random.sample()`로 일부만 출제
+- 목록: 한 번에 20개씩 나눠 보여주는 페이지 기능, 문제 내용 검색 기능
+- 저장: 임시 파일에 먼저 쓴 뒤 `os.replace()`로 교체(원자적 저장), 덮어쓰기 전 `state.json.bak` 백업
+- 데이터가 더 커지면: 표준 라이브러리 `sqlite3`로 바꿔 필요한 퀴즈만 읽고, 추가된 1건만 저장
+
+## 요구사항 변경 시 수정 대상
+
+| 변경 요구 예시 | 수정할 곳 | 함께 확인할 곳 |
+|---|---|---|
+| 점수 계산 방식 변경 (예: 문제별 배점, 힌트 사용 시 감점) | `QuizGame.play()`의 점수 계산 부분 | `update_best_score()`의 비교 기준, `show_best_score()` 출력 |
+| 퀴즈에 새 속성 추가 (예: 힌트, 난이도) | `Quiz.__init__()`, `display()`, `to_dict()`, `from_dict()` | `add_quiz()` 입력 항목, `get_default_quizzes()`, README 스키마 |
+| 선택지 개수 변경 (예: 5지선다) | `Quiz.from_dict()`의 선택지 개수 검사, `add_quiz()`의 선택지 반복 횟수와 정답 범위 | `play()`는 `len(quiz.choices)`를 쓰므로 수정 불필요 |
+| 저장 형식·위치 변경 (예: 파일 이름, DB 사용) | `STATE_FILE`, `load_state()`, `save_state()` | 기존 `state.json`을 새 형식으로 옮기는 방법 |
+| 메뉴 추가 (예: 퀴즈 삭제) | `show_menu()`, `run()`의 메뉴 분기와 `input_number("선택: ", 1, 5)`의 범위 | 새 기능 메서드 추가 후 `save_state()` 호출 |
+| 점수 기록 히스토리 저장 | `update_best_score()` 또는 `play()` 이후 기록 추가 | `save_state()`·`load_state()`에 새 키 추가, 기존 파일에 키가 없을 때 처리 |
+
+`state.json`에 새 키를 추가할 때는 `data.get()`으로 읽어 기존 파일에 키가 없어도 손상 처리로 빠지지 않게 해야 합니다.

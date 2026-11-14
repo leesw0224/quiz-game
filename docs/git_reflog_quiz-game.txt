@@ -1,0 +1,2 @@
+3aa0233 HEAD@{0}: pull: Fast-forward
+3131f1e HEAD@{1}: clone: from https://github.com/leesw0224/quiz-game.git

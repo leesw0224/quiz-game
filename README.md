@@ -63,7 +63,8 @@ quiz-game/
     ├── git_log_graph.txt               # git log --oneline --graph --all 출력
     ├── git_commit_count.txt            # git rev-list --count main 출력
     ├── git_reflog_quiz-game.txt        # 원래 작업 폴더의 git reflog (clone, pull)
-    └── git_reflog_quiz-game-clone.txt  # 복제 폴더의 git reflog (clone, commit)
+    ├── git_reflog_quiz-game-clone.txt  # 복제 폴더의 git reflog (clone, commit)
+    └── screenshots/                    # 실행 화면·개발 환경·Git 그래프·clone/pull 스크린샷 (8장)
 ```
 
 **main.py 구성**
@@ -130,6 +131,28 @@ quiz-game/
 
 - 실행 결과: [`docs/RUN_LOG.md`](docs/RUN_LOG.md) — 메뉴, 퀴즈 풀기·추가·목록·점수 확인, 잘못된 입력 처리, `Ctrl+C` 종료, 재실행 후 데이터 유지(재실행 전후 `state.json` 내용 포함)
 - Git 기록: [`docs/GIT_EVIDENCE.md`](docs/GIT_EVIDENCE.md) — `git log --oneline --graph` 결과, `feature/play-quiz` 브랜치 생성·병합, clone/pull 실습 출력 (원본 출력은 `docs/*.txt`)
+
+## 실행 화면
+
+| 화면 | 스크린샷 |
+|---|---|
+| 메뉴 (재실행 시 저장된 데이터 불러오기) | ![메뉴](docs/screenshots/menu.png) |
+| 퀴즈 풀기 (7문제 모두 정답, 최고 점수 갱신) | ![퀴즈 풀기](docs/screenshots/play.png) |
+| 퀴즈 추가 | ![퀴즈 추가](docs/screenshots/add_quiz.png) |
+| 퀴즈 목록 (추가한 8번째 퀴즈 포함) | ![퀴즈 목록](docs/screenshots/list.png) |
+| 점수 확인 | ![점수 확인](docs/screenshots/score.png) |
+
+**개발 환경** (Python 3.15.2, Git 2.56.0, Git 사용자 설정, 원격 저장소)
+
+![개발 환경](docs/screenshots/dev_env.png)
+
+**Git 커밋 그래프** (`git log --oneline --graph --all`, `feature/play-quiz` 브랜치 병합)
+
+![Git 커밋 그래프](docs/screenshots/git_log_graph.png)
+
+**clone / pull 실습** (복제 폴더 reflog의 clone·commit, 원래 폴더 reflog의 clone·pull)
+
+![clone pull 실습](docs/screenshots/clone_pull.png)
 
 ## 커밋 규칙
 
